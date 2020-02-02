@@ -1,0 +1,69 @@
+
+name: GitHubActions-Test
+env:
+  APPLICATION_NAME    : "MyAPP"
+  DEPLOY_PACKAGE_NAME : "app-deploy-ver-${{ github.sha }}"
+
+on: 
+  push:
+    branches: 
+      - master
+
+jobs:
+  Testing:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Print Hello Message in Testing
+      run : echo "Hello World from Testing job"
+    
+    - name: Execure few commands
+      run : |
+        echo "Hello Message1"
+        echo "Hello Message2"
+        echo "Appication name: ${{ env.APPLICATION_NAME }}"
+    
+    - name: List current folder
+      run : ls -la
+   
+    - name: Git clone my repo
+      uses: actions/checkout@v1
+  
+    - name: List current folder after clone repo
+      run : ls -la
+  
+    - name: Cat file1 after clone
+      run: cat file1.txt
+  
+    - name: Cat file2 after clone
+      run: cat file2.txt
+
+  Deploy:
+    runs-on: ubuntu-latest
+    needs: [Testing]
+    env:
+      VAR1 : "This is Job Level Variable1"
+      VAR2 : "This is Job Lebel Variable2"
+    
+    steps:
+    - name: Print Hello Message in Deploy
+      run : echo "Hello World from Deploy job"
+      
+    - name: Print env vars
+      run : |
+        echo "Var1 = ${{ env.VAR1 }}"
+        echo "Var2 = ${{ env.VAR2 }}"
+        echo "Var3 = $LOCAL_VAR"
+      env:
+        LOCAL_VAR: "This is Super local Environment variable"
+
+    
+    - name: Printing Deployment package
+      run : echo "Deploy package name is ${{ env.DEPLOY_PACKAGE_NAME }}"
+    
+    - name: Lets test some packages if they are here 1
+      run : aws --version
+
+    - name: Lets test some packages if they are here 2
+      run : zip --version
+      
